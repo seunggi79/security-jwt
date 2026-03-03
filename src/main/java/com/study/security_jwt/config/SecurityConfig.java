@@ -26,10 +26,14 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+        // ⭐ H2 콘솔은 iframe을 쓰므로 frameOptions를 풀어야 함
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
+                        // ⭐ H2 콘솔 경로 허용
+                        .requestMatchers("/", "/login", "/join", "/h2-console/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()); // 위에서 허용한 경로 외에는 로그인(인증)되어야 접근 가능
 
